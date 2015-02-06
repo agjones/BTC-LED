@@ -1,0 +1,1 @@
+This is a project that, when completed, will change the color of and LED to match the price trend of BTC, using the API provided by bitcoinaverage.com.
