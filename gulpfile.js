@@ -13,7 +13,7 @@ var rename = require('gulp-rename');
 gulp.task('default', ['watch']);
 
 //Build umbrella task
-gulp.task('build', ['js-build', 'html-build', 'bower-build', 'node-build']);
+gulp.task('build', ['js-build', 'html-build', 'css-build', 'bower-build', 'node-build']);
 
 //Dev build
 gulp.task('dev-build', ['build', 'node-dev-config-build']);
@@ -43,8 +43,13 @@ gulp.task('html-build', function() {
         .pipe(gulp.dest('dist/Public'));
 });
 
+gulp.task('css-build', function() {
+    return gulp.src('src/Public/css/**/*.css')
+        .pipe(gulp.dest('dist/Public/css'));
+});
+
 //Moving bower packages for deployment
-gulp.task('bower-build', ['angular-build', 'bootstrap-build', 'jquery-build']);
+gulp.task('bower-build', ['angular-build', 'bootstrap-build', 'jquery-build', 'chartjs-build']);
 
 gulp.task('angular-build', function() {
     return gulp.src('bower_components/angular/angular.min.js')
@@ -61,27 +66,32 @@ gulp.task('jquery-build', function() {
         .pipe(gulp.dest('dist/Public/js'));
 });
 
+gulp.task('chartjs-build', function() {
+    return gulp.src('bower_components/chartjs/Chart.js')
+        .pipe(gulp.dest('dist/Public/js'));
+});
+
 gulp.task('node-build', function() {
-    gulp.src('dist/Server/config/')
-        .pipe(clean());
     return gulp.src(['src/Server/**/*.js', '!src/Server/config/*'])
         .pipe(gulp.dest('dist/Server/'));
 });
 
-gulp.task('node-dev-config-build', function() {
+gulp.task('config-clean', function() {
+    return gulp.src('dist/Server/config/')
+        .pipe(clean());
+});
+
+gulp.task('node-dev-config-build', ['config-clean'], function() {
     return gulp.src(['src/Server/config/config.dev.js'])
         .pipe(rename('config.js'))
         .pipe(gulp.dest('dist/Server/config'));
 });
 
-gulp.task('node-prod-config-build', function() {
+gulp.task('node-prod-config-build', ['config-clean'], function() {
     return gulp.src(['src/Server/config/config.prod.js'])
         .pipe(rename('config.js'))
         .pipe(gulp.dest('dist/Server/config'));
 });
-
-
-
 
 //Watcher task, monitors angular/node code to restart app and redeploy
 gulp.task('watch', function() {
